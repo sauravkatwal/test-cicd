@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: Deploy Lambda Function
 
 on:
@@ -32,3 +33,39 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+=======
+name: Deploy Lambda Function
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+          
+      - name: Deploy CloudFormation Stack
+        run: |
+          export AWS_DEFAULT_REGION=ap-south-1  # Set the desired region
+          aws cloudformation deploy \
+            --template-file serverless-development.yaml \
+            --stack-name my-lambda-stack \
+            --capabilities CAPABILITY_IAM
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+>>>>>>> d3812923666c16994a9a5aefbc95a1868110bc95
