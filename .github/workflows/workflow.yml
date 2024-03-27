@@ -1,33 +1,27 @@
-name: Deploy Lambda Function
+name: Deploy to AWS
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
 
-      - name: Install AWS CLI
+      - name: Install npm 
+        run: npm install --legacy-peer-deps # Install dependencies
+
+      - name: NPM BUILD
+        run: npm run build
+        
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Deploy to AWS
         run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
-          
-      - name: Deploy CloudFormation Stack
-        run: |
-          export AWS_DEFAULT_REGION=ap-south-1
-          aws cloudformation deploy \
-            --template-file serverless-development.yml \
-            --stack-name my-lambda-stack \
-            --capabilities CAPABILITY_IAM
+          serverless deploy --verbose --config serverless-development.yml
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
