@@ -1,0 +1,127 @@
+/* eslint-disable */
+"use strict";
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface) {
+    await queryInterface.bulkInsert(
+      "screen_role_mappings",
+      [
+        // Service Mappings
+        {
+          id: 53,
+          screen_id: 2,
+          module_id: 3,
+          privilege_id: 53,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 54,
+          screen_id: 5,
+          module_id: 9,
+          privilege_id: 54,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 55,
+          screen_id: 5,
+          module_id: 9,
+          privilege_id: 55,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 56,
+          screen_id: 5,
+          module_id: 9,
+          privilege_id: 56,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 57,
+          screen_id: 5,
+          module_id: 9,
+          privilege_id: 57,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 58,
+          screen_id: 6,
+          module_id: 11,
+          privilege_id: 58,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 59,
+          screen_id: 6,
+          module_id: 11,
+          privilege_id: 59,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 60,
+          screen_id: 6,
+          module_id: 11,
+          privilege_id: 60,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+        {
+          id: 61,
+          screen_id: 6,
+          module_id: 11,
+          privilege_id: 61,
+          role_id: 1,
+          is_default: true,
+          is_published: true,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      ],
+      {}
+    );
+  },
+
+  async down(queryInterface) {
+    await queryInterface.bulkDelete("screen_role_mappings", [], {});
+  },
+};

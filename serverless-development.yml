@@ -1,0 +1,87 @@
+service: gump-backend
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-south-1
+  runtime: nodejs18.x
+  httpApi:
+    cors: true
+
+functions:
+  graphql:
+    name: gump-backend-development-graphql
+    description: gump backend development graphql
+    handler: src/server.graphqlHandler
+    timeout: 29
+    events:
+      - httpApi:
+          path: /
+          method: POST
+
+      - httpApi:
+          path: /
+          method: GET
+
+  cronHandler:
+    name: gump-backend-development-cornHandler
+    description: gump backend development cronHandler
+    handler: src/server.cronHandler
+    events:
+      - schedule: rate(15 minutes)
+
+  emailRegistryConsumer:
+    name: gump-backend-development-emailRegistryConsumer
+    description: gump backend development sqs emailRegistryConsumer
+    handler: src/server.emailRegistryConsumer
+    timeout: 120
+    role: gumpBackendDevLambda
+
+resources:
+  Resources:
+    gumpBackendDevLambda:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /my/default/path/
+        RoleName: gump-backend-dev-lambda
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: gump-backend-dev-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogStream
+                    - logs:CreateLogGroup
+                  Resource:
+                    - 'arn:aws:logs:ap-south-1:306128231230:log-group:/aws/lambda/gump-backend-dev*:*'
+                - Effect: Allow
+                  Action:
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'arn:aws:logs:ap-south-1:306128231230:log-group:/aws/lambda/gump-backend-dev*:*:*'
+                - Effect: Allow
+                  Action:
+                    - sqs:*
+                  Resource:
+                    - '*'
+
+custom:
+  serverless-offline:
+    httpPort: 8080
+  dotenv:
+    path: .env.development
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-openapi-joi
+  - serverless-offline
+  - serverless-dotenv-plugin

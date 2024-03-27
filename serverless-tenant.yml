@@ -1,0 +1,26 @@
+service: gump-backend
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  environment:
+    DB_DIALECT: ${env:DB_DIALECT_TENANT}
+    DB_NAME: ${env:DB_NAME_TENANT}
+    DB_USERNAME: ${env:DB_USER_TENANT}
+    DB_PASSWORD: ${env:DB_PASSWORD_TENANT}
+    DB_HOST: ${env:DB_HOST_TENANT}
+    DB_PORT: ${env:DB_PORT_TENANT}
+
+plugins:
+  - serverless-sequelize-migrations
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+custom:
+  migrationsPath: './src/tenant/migrations'
+  dotenv:
+    path: .env
+  scripts:
+    seedTenant: "./src/handlers/sequelize-seed-tenant.ts"

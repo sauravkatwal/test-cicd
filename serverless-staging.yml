@@ -1,0 +1,87 @@
+service: gump-backend
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-southeast-1
+  runtime: nodejs18.x
+  httpApi:
+    cors: true
+
+functions:
+  graphql:
+    name: gump-backend-staging-graphql
+    description: gump backend staging graphql
+    handler: src/server.graphqlHandler
+    timeout: 29
+    events:
+      - httpApi:
+          path: /
+          method: POST
+
+      - httpApi:
+          path: /
+          method: GET
+
+  cronHandler:
+    name: gump-backend-staging-cornHandler
+    description: gump backend staging cronHandler
+    handler: src/server.cronHandler
+    events:
+      - schedule: rate(15 minutes)
+
+  emailRegistryConsumer:
+    name: gump-backend-staging-emailRegistryConsumer
+    description: gump backend staging sqs emailRegistryConsumer
+    handler: src/server.emailRegistryConsumer
+    timeout: 120
+    role: gumpBackendStagingLambda
+
+resources:
+  Resources:
+    gumpBackendStagingLambda:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /my/default/path/
+        RoleName: gump-backend-staging-lambda
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: gump-backend-staging-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogStream
+                    - logs:CreateLogGroup
+                  Resource:
+                    - 'arn:aws:logs:ap-southeast-1:306128231230:log-group:/aws/lambda/gump-backend-staging*:*'
+                - Effect: Allow
+                  Action:
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'arn:aws:logs:ap-southeast-1:306128231230:log-group:/aws/lambda/gump-backend-staging*:*:*'
+                - Effect: Allow
+                  Action:
+                    - sqs:*
+                  Resource:
+                    - '*'
+
+custom:
+  serverless-offline:
+    httpPort: 8080
+  dotenv:
+    path: .env.staging
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-openapi-joi
+  - serverless-offline
+  - serverless-dotenv-plugin

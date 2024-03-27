@@ -1,0 +1,66 @@
+service: gump-backend
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-south-1
+  runtime: nodejs18.x
+  stage: production
+  httpApi:
+    cors: true
+
+functions:
+  graphql:
+    name: gump-backend-production-graphql
+    description: gump backend production graphql
+    handler: src/server.graphqlHandler
+    timeout: 29
+    events:
+      - httpApi:
+          path: /
+          method: POST
+
+      - httpApi:
+          path: /
+          method: GET
+    vpc:
+      securityGroupIds:
+        - sg-044fe26f7aa198d31
+      subnetIds:
+        - subnet-00337359953f823e6
+
+  cronHandler:
+    name: gump-backend-production-cornHandler
+    description: gump backend production cronHandler
+    handler: src/server.cronHandler
+    events:
+      - schedule: rate(15 minutes)
+    vpc:
+      securityGroupIds:
+        - sg-044fe26f7aa198d31
+      subnetIds:
+        - subnet-00337359953f823e6
+
+  emailRegistryConsumer:
+    name: gump-backend-production-emailRegistryConsumer
+    description: gump backend production sqs emailRegistryConsumer
+    handler: src/server.emailRegistryConsumer
+    timeout: 120
+    vpc:
+      securityGroupIds:
+        - sg-044fe26f7aa198d31
+      subnetIds:
+        - subnet-00337359953f823e6
+
+custom:
+  serverless-offline:
+    httpPort: 8080
+  dotenv:
+    path: .env.production
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-openapi-joi
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-sequelize-migrations

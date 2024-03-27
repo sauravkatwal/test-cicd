@@ -1,0 +1,44 @@
+service: gump-backend
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-south-1
+  runtime: nodejs18.x
+  httpApi:
+    cors: true
+  timeout: 100 # optional, in seconds, default is 6
+
+functions:
+  graphql:
+    name: gump-backend-development-graphql
+    description: gump backend development graphql
+    handler: src/server.graphqlHandler
+    events:
+      - httpApi:
+          path: /
+          method: POST
+
+      - httpApi:
+          path: /
+          method: GET
+
+  cronHandler:
+    name: gump-backend-development-cornHandler
+    description: gump backend development cronHandler
+    handler: src/server.cronHandler
+    events:
+      - schedule: rate(1 hour)
+
+custom:
+  serverless-offline:
+    httpPort: 8080
+  dotenv:
+    path: .env
+
+plugins:
+  - serverless-sequelize-migrations
+  - serverless-plugin-typescript
+  - serverless-openapi-joi
+  - serverless-offline
+  - serverless-dotenv-plugin
